@@ -26,7 +26,7 @@ Include Block G in the saved report. Add `**Legitimacy:** {tier}` to the report 
 ## Paso 3 — Generar PDF
 Read `config/profile.yml`. Check `cv.output_format`:
 
-- If `"latex"`, execute the full pipeline from `modes/latex.md`
+- If `"latex"`, execute the full one-page Jake-style pipeline from `modes/latex.md`. The PDF must pass the one-page/fullness QA from that mode before marking PDF as complete.
 - Otherwise (default), execute the full pipeline from `modes/pdf.md`
 
 ## Paso 4 — Draft Application Answers (solo si score >= 4.5)

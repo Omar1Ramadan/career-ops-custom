@@ -20,8 +20,8 @@ import { existsSync, mkdirSync } from 'fs';
 
 const REQUIRED_SECTIONS = [
   '\\\\section{Education}',
-  '\\\\section{Work Experience}',
-  '\\\\section{Personal Projects}',
+  '\\\\section{Experience}',
+  '\\\\section{Projects}',
   '\\\\section{Technical Skills}',
 ];
 
@@ -29,7 +29,25 @@ const REQUIRED_COMMANDS = [
   '\\\\resumeSubheading',
   '\\\\resumeItem',
   '\\\\resumeProjectHeading',
+  '\\\\ResumeSkills',
 ];
+
+const MIN_COUNTS = {
+  resumeItems: 10,
+  subheadings: 3,
+  projectHeadings: 2,
+};
+
+function countPagesFromText(text) {
+  const match = text.match(/Output written on[\s\S]*?\((\d+) pages?/i);
+  if (match) return Number.parseInt(match[1], 10);
+  return 0;
+}
+
+function countPdfPages(buffer) {
+  const pdfString = buffer.toString('latin1');
+  return (pdfString.match(/\/Type\s*\/Page(?!s)\b/g) || []).length;
+}
 
 async function main() {
   const inputPath = process.argv[2];
@@ -86,13 +104,23 @@ async function main() {
 
   for (const line of lines) {
     if (/\\resumeItem\{/.test(line)) resumeItemCount++;
-    if (/\\resumeSubheading[^C]/.test(line)) subheadingCount++;
-    if (/\\resumeProjectHeading/.test(line)) projectHeadingCount++;
+    if (/^\s*\\resumeSubheading\b/.test(line)) subheadingCount++;
+    if (/^\s*\\resumeProjectHeading\b/.test(line)) projectHeadingCount++;
   }
 
   // Check pdfgentounicode
   if (!content.includes('\\pdfgentounicode=1')) {
     issues.push('Missing \\pdfgentounicode=1 (ATS compatibility)');
+  }
+
+  if (resumeItemCount < MIN_COUNTS.resumeItems) {
+    issues.push(`Resume looks underfilled: found ${resumeItemCount} resume items, expected at least ${MIN_COUNTS.resumeItems}`);
+  }
+  if (subheadingCount < MIN_COUNTS.subheadings) {
+    issues.push(`Missing depth: found ${subheadingCount} subheadings, expected at least ${MIN_COUNTS.subheadings}`);
+  }
+  if (projectHeadingCount < MIN_COUNTS.projectHeadings) {
+    issues.push(`Missing project depth: found ${projectHeadingCount} project headings, expected at least ${MIN_COUNTS.projectHeadings}`);
   }
 
   const fileInfo = await stat(absPath);
@@ -114,6 +142,7 @@ async function main() {
 
   // If validation fails, report and exit
   if (issues.length > 0) {
+    report.valid = false;
     console.log(JSON.stringify(report, null, 2));
     process.exit(1);
   }
@@ -148,6 +177,7 @@ async function main() {
   }
 
   report.engine = engine;
+  let compileOutput = '';
 
   // For tectonic: strip pdflatex-only primitives that cause crashes
   let compilePath = absPath;
@@ -162,9 +192,9 @@ async function main() {
   try {
     if (engine === 'tectonic') {
       // Tectonic handles multi-pass automatically; --outdir sets output location
-      execFileSync('tectonic', ['--outdir', texDir, compilePath], {
+      compileOutput = execFileSync('tectonic', ['--outdir', texDir, compilePath], {
         cwd: texDir,
-        stdio: 'pipe',
+        encoding: 'utf-8',
         timeout: 120_000,
       });
     } else {
@@ -176,9 +206,9 @@ async function main() {
         absPath,
       ];
       // First pass
-      execFileSync('pdflatex', pdflatexArgs, { cwd: texDir, stdio: 'pipe', timeout: 120_000 });
+      compileOutput += execFileSync('pdflatex', pdflatexArgs, { cwd: texDir, encoding: 'utf-8', timeout: 120_000 });
       // Second pass (resolves referenceS))
-      execFileSync('pdflatex', pdflatexArgs, { cwd: texDir, stdio: 'pipe', timeout: 120_000 });
+      compileOutput += execFileSync('pdflatex', pdflatexArgs, { cwd: texDir, encoding: 'utf-8', timeout: 120_000 });
     }
 
     report.compiled = true;
@@ -209,11 +239,25 @@ async function main() {
         await rm(compiledPdf).catch(() => {});
       }
 
+      const pdfBuffer = await readFile(targetPdf);
+      const compileBase = basename(compilePath, '.tex');
+      const compiledLogPath = join(texDir, `${compileBase}.log`);
+      let compiledLog = '';
+      try {
+        compiledLog = await readFile(compiledLogPath, 'utf-8');
+      } catch { /* log unavailable */ }
+      const pageCount = countPagesFromText(`${compileOutput}\n${compiledLog}`) || countPdfPages(pdfBuffer);
+      if (pageCount !== 1) {
+        report.pageIssue = `Generated PDF has ${pageCount || 'unknown'} pages; expected exactly 1 page. Revise the .tex and rerun.`;
+        report.compiled = false;
+      }
+
       const pdfStat = await stat(targetPdf);
       report.pdf = {
         path: targetPdf,
         sizeKB: parseFloat((pdfStat.size / 1024).toFixed(1)),
       };
+      report.pages = pageCount;
     } catch (err) {
       report.postCompileError = `Failed to finalize PDF: ${err.message}`;
     }
@@ -228,8 +272,9 @@ async function main() {
     }
   }
 
+  report.valid = report.valid && report.compiled && report.pages === 1 && !report.pageIssue;
   console.log(JSON.stringify(report, null, 2));
-  process.exit(report.compiled ? 0 : 1);
+  process.exit(report.valid ? 0 : 1);
 }
 
 main();

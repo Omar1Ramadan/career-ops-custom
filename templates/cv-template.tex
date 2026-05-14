@@ -1,11 +1,12 @@
 %-------------------------
 % Career-Ops LaTeX CV Template
-% Based on: Gabriel Sison / sb2nov resume template
+% One-page Jake-style resume template
+% Based on: Jake Gutierrez / sb2nov resume template
 % License: MIT
 %------------------------
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Random Stuff %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass[letterpaper,11pt]{article}
+
 \usepackage{latexsym}
 \usepackage[empty]{fullpage}
 \usepackage{titlesec}
@@ -17,107 +18,99 @@
 \usepackage{fancyhdr}
 \usepackage[english]{babel}
 \usepackage{tabularx}
-\usepackage{fontawesome}
-\usepackage{multicol}
-\setlength{\multicolsep}{-3.0pt}
-\setlength{\columnsep}{-1pt}
 \input{glyphtounicode}
-\pagestyle{fancy}
-\fancyhf{} % clear all header and footer fields
-\fancyfoot{}
-\renewcommand{\headrulewidth}{0pt}
-\renewcommand{\footrulewidth}{0pt}
-% Adjust margins
-\addtolength{\oddsidemargin}{-0.6in}
-\addtolength{\evensidemargin}{-0.5in}
-\addtolength{\textwidth}{1.19in}
-\addtolength{\topmargin}{-.7in}
-\addtolength{\textheight}{1.4in}
+
+\pdfgentounicode=1
 \urlstyle{same}
 \raggedbottom
 \raggedright
 \setlength{\tabcolsep}{0in}
-% Sections formatting
-\titleformat{\section}{
-  \vspace{-7pt}\scshape\raggedright\large\bfseries
-}{}{0em}{}[\color{black}\titlerule \vspace{0pt}]
-% Ensure that generate pdf is machine readable/ATS parsable
-\pdfgentounicode=1
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Commands  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\footskip}{5pt}
+
+\addtolength{\oddsidemargin}{-0.50in}
+\addtolength{\evensidemargin}{-0.50in}
+\addtolength{\textwidth}{1.00in}
+\addtolength{\topmargin}{-0.55in}
+\addtolength{\textheight}{1.10in}
+
+\titleformat{\section}{
+  \vspace{-5pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
 \newcommand{\resumeItem}[1]{
-  \item\small{
-    {#1 \vspace{-3pt}}
-  }
+  \item\small{{#1 \vspace{-2pt}}}
 }
+
+\newcommand{\Csharp}{C\#}
+\newcommand{\ts}{\textsuperscript}
+
 \newcommand{\resumeSubheading}[4]{
-  \vspace{-3pt}\item
-    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
-      \textbf{#1} & \textbf{\small #2} \\
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
       \textit{\small#3} & \textit{\small #4} \\
     \end{tabular*}\vspace{-7pt}
 }
-\newcommand{\resumeSubheadingContinue}[2]{
-  \vspace{-3pt}
-    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
-      \textit{\small#1} & \textit{\small #2} \\
-    \end{tabular*}\vspace{-7pt}
-}
+
 \newcommand{\resumeProjectHeading}[2]{
-  \vspace{-3pt}\item
-    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
-      \textbf{#1} & \textbf{\small #2} \\
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
     \end{tabular*}\vspace{-7pt}
 }
-\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{0pt}}
-\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
 \renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
-\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
 \newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
-\newcommand{\resumeItemListStart}{\begin{itemize}}
-\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{0pt}}
+\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=0.20in]}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Heading  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\ResumeSkills}[4]{
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Languages}{: #1} \\
+     \textbf{Frameworks}{: #2} \\
+     \textbf{Developer Tools}{: #3} \\
+     \textbf{Libraries}{: #4}
+    }}
+ \end{itemize}
+}
+
 \begin{document}
-    \begin{center}
-        % NAME
-        {\Huge\scshape {{NAME}}}
-        % SUBHEADING
-        \\ {{CONTACT_LINE}}\\
-        \small
-        % EMAIL
-        \href{mailto:{{EMAIL_URL}}}{\raisebox{-0.2\height}\faEnvelope\  \underline{{{EMAIL_DISPLAY}}}} ~
-        % LINKEDIN
-        \href{{{LINKEDIN_URL}}}{\raisebox{-0.2\height}\faLinkedin\ \underline{{{LINKEDIN_DISPLAY}}}}  ~
-        % GITHUB
-        \href{{{GITHUB_URL}}}{\raisebox{-0.2\height}\faGithub\ \underline{{{GITHUB_DISPLAY}}}}
-    \end{center}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Education  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{center}
+    \textbf{\Huge \scshape {{NAME}}} \\ \vspace{1pt}
+    {{CONTACT_LINE}} $|$
+    \href{mailto:{{EMAIL_URL}}}{\underline{{{EMAIL_DISPLAY}}}} \\ \vspace{1pt}
+    \href{{{PORTFOLIO_URL}}}{\underline{{{PORTFOLIO_DISPLAY}}}} $|$
+    \href{{{LINKEDIN_URL}}}{\underline{{{LINKEDIN_DISPLAY}}}} $|$
+    \href{{{GITHUB_URL}}}{\underline{{{GITHUB_DISPLAY}}}}
+\end{center}
+
 \section{Education}
   \resumeSubHeadingListStart
 {{EDUCATION}}
   \resumeSubHeadingListEnd
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Experience  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Work Experience}
+\section{Experience}
   \resumeSubHeadingListStart
 {{EXPERIENCE}}
   \resumeSubHeadingListEnd
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%  PROJECTS  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Personal Projects}
-\resumeSubHeadingListStart
+\section{Projects}
+  \resumeSubHeadingListStart
 {{PROJECTS}}
-\resumeSubHeadingListEnd
+  \resumeSubHeadingListEnd
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Technical Skills  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Technical Skills}
-\vspace{-7pt}
-\begin{itemize}
-[leftmargin=0.15in, label={}]\small{\item{
 {{SKILLS}}
-}}
-\end{itemize}
 
 \end{document}
